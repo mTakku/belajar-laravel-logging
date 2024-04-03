@@ -29,11 +29,20 @@ class LoggingTest extends TestCase
    public function testWithContext() {
 
     Log::withContext(["user" => "Khaneddy"]);
-    
+
     Log::info("Hello Info", ["user" => "Farel"]);
     Log::info("Hello Info", ["user" => "Farel"]);
     Log::info("Hello Info", ["user" => "Farel"]);
 
+    self::assertTrue(true);
+   }
+
+   public function testChannel()
+   {
+    $slackLogger = Log::channel("slack");
+    $slackLogger->error("Hello Slack"); // send to slack channel
+
+    Log::info("Hello Laravel"); // send to default channel
     self::assertTrue(true);
    }
 }
