@@ -1,229 +1,150 @@
-# LARAVEL LOGGING
-
-## POINT UTAMA
-
-### 1. Logging Channel
-
-1. Default channel milik `Laravel`.
-
--   Single, Mengirim data _log_ ke single file.
-
-    ```PHP
-    'single' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/laravel.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-        ],
-    ```
-
--   Daily, mengirim data _log_ ke single file, namun setiap hari akan di _rotate_ filenya.
-
-    ```PHP
-     'daily' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/laravel.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'days' => 14,
-        ],
-    ```
-
--   Slack, mengirim data _log_ ke `slack chat`.
-
-    ```PHP
-    'slack' => [
-            'driver' => 'slack',
-            'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'Laravel Log',
-            'emoji' => ':boom:',
-            'level' => env('LOG_LEVEL', 'critical'),
-        ],
-    ```
-
--   Sylog, mengirim data _log_ ke `sylog`.
-
-    ```PHP
-     'syslog' => [
-            'driver' => 'syslog',
-            'level' => env('LOG_LEVEL', 'debug'),
-        ],
-    ```
-
--   Null, tidak mengirim data _log_ kemanapun.
-
-    ```PHP
-    'null' => [
-            'driver' => 'monolog',
-            'handler' => NullHandler::class,
-        ],
-    ```
-
--   Stack, mengirim data _log_ ke beberapa channel sekaligus, default nya hanya mengirim ke channel.
-
-    ```PHP
-    'stack' => [
-            'driver' => 'stack',
-            'channels' => ['single'],
-            'ignore_exceptions' => false,
-        ],
-    ```
-
--   Secara default, `laravel` akan menggunakan channel `slack`.
+<p align="center" >
+  <b>POINT UTAMA</b>
+</p>
 
 ---
 
-### 2. Log Facade
+> #### INSTALASI
+> - PHP 8.1.0
+> - LARAVEL 9.1.10
 
--   Kita bisa menggunakan `Log facade` untuk melakukan logging di `laravel`.
-
--   Kode `log facade`
-
-    ```php
-    class LoggingTest extends TestCase
-    {
-        public function testLogging()
-        {
-            Log::info("Hello Info");
-            Log::warning("Hello Warning");
-            Log::error("Hello Error");
-            Log::critical("Hello Critical");
-
-            self::assertTrue(true);
-        }
-    }
-    ```
-
--   Hasil dari log bisa di lihat di `storage/logs/laravel.log`.
+> #### APA ITU LOGGING?
+> - Logging merupakan standar industri untuk memantau informasi yang terjadi di aplikasi.
+> - Logging melibatkan pengiriman informasi kejadian ke berkas log, database, atau tempat penyimpanan lainnya.
+>
+> #### LOGGING CONFIGURATION
+> - Konfigurasi logging adalah proses menentukan bagaimana dan di mana pesan logging akan dicatat, termasuk tingkat logging, format, tujuan penyimpanan, rotasi log, dan filter pesan.
+>
+> #### LOGGING FACADE 
+> - Log Facade adalah fitur didalam laravel yang memungkinkan kamu untuk mencatat pesan log dengan mudah ke dalam berbagai saluran log yang telah dikonfigurasi.
+>
+> Berikut contoh log facade :
+> ```
+>  Log::debug('An debug message.');
+>  Log::info("An informational message");
+>  Log::error("An error message");
+> ```
+>
+> #### MULTIPLE LOG CHANNEL
+> - Multiple Log Channel adalah kemampuan dalam Laravel yang memungkinkan kamu untuk mencatat pesan log ke beberapa saluran log secara bersamaan, memungkinkan pemantauan dan pemecahan masalah yang lebih        efektif.
+>
+> Berikut contoh kode log channel,slack :
+> ```
+> 
+>    return [
+>    ...
+>     'channels' => [
+>      'single' => [
+>          'driver' => 'single',
+>          'level' => 'debug',
+>        ],
+> 
+>      'daily' => [
+>       'driver' => 'daily',
+>           'path' => storage_path('logs/laravel.log'),
+>            'level' => env('LOG_LEVEL', 'debug'),
+>            'days' => 14,
+>    ],
+>
+>        'slack' => [
+>          'driver' => 'slack',
+>          'url' => env('LOG_SLACK_WEBHOOK_URL'),
+>          'level' => 'critical',
+>       ],
+>     ],
+>    ];
+> ```
+>
+> #### SINGLE
+> - Single, Mengirim data log ke single file.
+>
+> #### DAILY
+> - Daily, mengirim data log ke single file, namun setiap hari akan di rotate filenya.
+>
+> #### SLACK
+> - Slack, mengirim data log ke slack.
+---
+> #### CONTEXT
+> - Context dalam logging adalah informasi tambahan yang disertakan bersama dengan pesan log untuk memberikan konteks atau detail lebih lanjut tentang peristiwa yang terjadi, membantu dalam pemecahan       masalah dan pemantauan kinerja aplikasi.
+>
+> #### SELECTED CHANNEL
+> - Selected Channel dalam logging Laravel adalah saluran log tertentu yang dipilih untuk menerima pesan log dari aplikasi. Ini memungkinkan pengguna untuk mengarahkan pesan log ke saluran yang sesuai dengan kebutuhan aplikasi, seperti file teks, sistem log, atau layanan pihak ketiga seperti Slack.
+>
+> Berikut kode selected channel :
+>
+> ```
+> $slackLogger = Log::channel("slack");
+> $slackLogger->error("Hello Slack");
+>
+>  Log::info("Hello from Laravel");
+>  self::assertTrue(true);
+> ```
+>
+---
+> #### CONTEXT
+> - Context dalam logging memungkinkan penambahan informasi tambahan, seperti data pengguna, secara otomatis tanpa perlu membuat format pesan manual.
+>
+> Berikut kode context :
+>
+> ```
+> Log::info("This is an informational info", ["user" => "farel"]);
+> ```
+---
+> #### HANDLER
+> - Handler dalam logging adalah bagian dari sistem yang menangkap pesan log dan mengirimkannya ke tujuan yang ditentukan, seperti file, sistem log, email, atau layanan pihak ketiga seperti Slack.
+>
+> Berikut kode handler :
+> ```
+> $fileLogger = Log::channel("file");
+> $fileLogger->info("Information file handler");
+> self::assertTrue(true);
+> ```
+---
+> #### Formatter
+> - Formatter dalam logging mengatur format dari pesan log sebelum pesan tersebut disampaikan ke tujuan yang ditentukan, seperti file atau layanan pihak ketiga.
+> 
+> Berikut kode formatter :
+> ```
+> 'file' => [
+>        'driver' => 'monolog',
+>        'level' => env('LOG_LEVEL', 'debug'),
+>      'handler' => StreamHandler::class,
+>       'formatter' => \Monolog\Formatter\JsonFormatter::class,
+>      'with' =>
+>           'stream' => storage_path("logs/application.log"),
+>         ],
+>    ],
+> 
+<p align="center" >
+  <b>PERTANYAAN DAN CATATAN TAMBAHAN</b>
+</p>
 
 ---
 
-### 3. Multiple Log Channel
-
--   Untuk membuat _log_ ke `slack`, kita perlu membuat URL terlebih dahulu. Di directory `config/logging.php`
-
-    ```PHP
-     'stack' => [
-            'driver' => 'stack',
-            'channels' => ['single', 'slack', 'stderr'], //menambahkan channel
-            'ignore_exceptions' => false,
-        ],
-
-         'slack' => [
-            'driver' => 'slack',
-            'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'Laravel Log',
-            'emoji' => ':boom:',
-            'level' => env('LOG_LEVEL_SLACK', 'error'), // menambahkan level error
-        ],
-    ```
-
-    ```PHP
-    LOG_CHANNEL=stack
-    LOG_DEPRECATIONS_CHANNEL=null
-    LOG_LEVEL=debug
-    LOG_LEVEL_SLACK=error
-    LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
-    ```
+> - 
 
 ---
 
-### 4. Context
+<p align="center" >
+  <b>KESIMPULAN</b>
+</p>
 
--   `Log facade` memiliki parameter kedua setelah message yang bisa diisi dengan data `context`. Mirip seperti PHP logging.
+> - Logging penting dalam pengembangan aplikasi untuk mencatat informasi kejadian.
 
-    ```PHP
-     public function testContext()
-    {
-        Log::info("Hello Info", ["user" => "khannedy"]);
-        Log::info("Hello Info", ["user" => "khannedy"]);
-        Log::info("Hello Info", ["user" => "khannedy"]);
 
-        self::assertTrue(true);
-    }
-    ```
 
--   Atau kita bisa menggunakan _function_ `withContext()`, untuk secara otomatis ke kode selanjutnya.
 
--   Kode `withContext`
 
-    ```PHP
 
-    public function testWithContext()
-    {
-        Log::withContext(["user" => "akbar"]);
 
-        Log::info("Hello Info");
-        Log::info("Hello Info");
-        Log::info("Hello Info");
 
-        self::assertTrue(true);
-    }
-    ```
 
----
 
-### 5. Selected Channel
 
--   Kode selected channel
 
-    ```PHP
-    public function testChannel()
-    {
-        $slackLogger = Log::channel("slack");
-        $slackLogger->error("Hello Slack"); // send to slack channel
 
-        Log::info("Hello Laravel"); // send to default channel
-        self::assertTrue(true);
-    }
-    ```
 
----
 
-### 6. Handler
 
--   Kode Handler
 
-    ```PHP
-      public function testFileHandler()
-    {
-        $fileLogger = Log::channel("file");
-        $fileLogger->info("Hello File Handler");
-        $fileLogger->warning("Hello File Handler");
-        $fileLogger->error("Hello File Handler");
-        $fileLogger->critical("Hello File Handler");
-
-        self::assertTrue(true);
-    }
-    ```
-
----
-
-### 7. Formatter
-
--   Di `laravel` kita bisa menggunakan `config formatter` dengan berisi _class_ `formatter`.
-
--   Kode konfigurasi
-
-    ```PHP
-    'file' => [
-            'driver' => 'monolog',
-            'level' => env('LOG_LEVEL', 'debug'),
-            'handler' => StreamHandler::class,
-            'formatter' => \Monolog\Formatter\JsonFormatter::class,
-            'with' => [
-                'stream' => storage_path("logs/application.log"),
-            ],
-        ],
-    ```
-
----
-
-## PERTANYAAN & CATATAN TAMBAHAN
-
--
-
----
-
-### KESIMPULAN
-
--
 
